@@ -2,8 +2,6 @@ const invoiceData = require('../cap1/invoices.json');
 const playsData = require('../cap1/plays.json');
 
 function statement(invoice, plays) {
-  let totalAmount = 0;
-
   let result = `Statement for ${invoice.customer}\n`;
 
   for (let perf of invoice.performances) {
@@ -11,10 +9,9 @@ function statement(invoice, plays) {
     result += `  ${playFor(perf).name}: ${toUSD(amountFor(perf) / 100)} (${
       perf.audience
     } seats)\n`;
-    totalAmount += amountFor(perf);
   }
 
-  result += `Amount owed is ${toUSD(totalAmount)}\n`;
+  result += `Amount owed is ${toUSD(totalAmount())}\n`;
   result += `You earned ${totalVolumeCredits()} credits\n`;
 
   return result;
@@ -76,6 +73,15 @@ function statement(invoice, plays) {
       currency: 'USD',
       minimumFractionDigits: 2,
     }).format(aNumber / 100);
+  }
+
+  // sétimo passo: extrair a função totalAmount e remover a variável temporária totalAmount
+  function totalAmount() {
+    let result = 0;
+    for (let perf of invoice.performances) {
+      result += amountFor(perf);
+    }
+    return result;
   }
 }
 
