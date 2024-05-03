@@ -3,12 +3,10 @@ const playsData = require('../cap1/plays.json');
 
 function statement(invoice, plays) {
   let totalAmount = 0;
-  let volumeCredits = 0;
+
   let result = `Statement for ${invoice.customer}\n`;
 
   for (let perf of invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf);
-
     // print line for this order
     result += `  ${playFor(perf).name}: ${toUSD(amountFor(perf) / 100)} (${
       perf.audience
@@ -17,7 +15,7 @@ function statement(invoice, plays) {
   }
 
   result += `Amount owed is ${toUSD(totalAmount)}\n`;
-  result += `You earned ${volumeCredits} credits\n`;
+  result += `You earned ${totalVolumeCredits()} credits\n`;
 
   return result;
 
@@ -44,6 +42,15 @@ function statement(invoice, plays) {
         throw new Error(`unknown type: ${playFor(aPerformance).type}`);
     }
 
+    return result;
+  }
+
+  // sexto passo: extrair a função totalVolumeCredits e remover a variável temporária volumeCredits
+  function totalVolumeCredits() {
+    let result = 0;
+    for (let perf of invoice.performances) {
+      result += volumeCreditsFor(perf);
+    }
     return result;
   }
 
