@@ -1,3 +1,6 @@
+const invoiceData = require('../cap1/invoices.json');
+const playsData = require('../cap1/plays.json');
+
 function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
@@ -10,11 +13,7 @@ function statement(invoice, plays) {
   }).format;
 
   for (let perf of invoice.performances) {
-    // add volume credits
-    volumeCredits += Math.max(perf.audience - 30, 0);
-    // add extra credit for every ten comedy attendees
-    if ('comedy' === playFor(perf).type)
-      volumeCredits += Math.floor(perf.audience / 5);
+    volumeCredits += volumeCreditsFor(perf);
 
     // print line for this order
     result += `  ${playFor(perf).name}: ${format(amountFor(perf) / 100)} (${
@@ -54,11 +53,6 @@ function statement(invoice, plays) {
     return result;
   }
 
-  // segundo passo: remover a variável temporária play e internalizar a função playFor
-  function playFor(aPerformance) {
-    return plays[aPerformance.playID];
-  }
-
   // quarto passo: extrair a função de cálculo de créditos
   function volumeCreditsFor(aPerformance) {
     let result = 0;
@@ -68,6 +62,11 @@ function statement(invoice, plays) {
 
     return result;
   }
+
+  // segundo passo: remover a variável temporária play e internalizar a função playFor
+  function playFor(aPerformance) {
+    return plays[aPerformance.playID];
+  }
 }
 
-console.log(statement(invoice, plays));
+console.log(statement(invoiceData, playsData));
